@@ -13,15 +13,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Extract app source
+      - name: Extract app
         run: |
-          unzip -q app.zip -d source
-          find source -maxdepth 5 -type f | head -100
-
-      - name: Locate project
-        run: |
-          PROJECT_DIR=$(find source -name settings.gradle -o -name settings.gradle.kts | head -1 | xargs dirname)
-          echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
+          unzip -q app.zip -d extracted
+          cp -r extracted/app .
+          echo "=== PROJECT STRUCTURE ==="
+          find app -maxdepth 4 -type f | sort | head -100
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -38,11 +35,10 @@ jobs:
           gradle-version: '8.7'
 
       - name: Build APK
-        working-directory: ${{ env.PROJECT_DIR }}
         run: gradle --no-daemon assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: AMALAN-BAIAT-baseline
-          path: ${{ env.PROJECT_DIR }}/app/build/outputs/apk/debug/*.apk
+          path: app/build/outputs/apk/debug/*.apk
