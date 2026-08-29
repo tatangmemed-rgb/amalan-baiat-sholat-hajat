@@ -1,1 +1,62 @@
+name: Build AMALAN BAIAT APK
 
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main", "master"]
+    paths-ignore:
+      - "download/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK 35
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.7"
+
+      - name: Build debug APK
+        run: gradle --no-daemon assembleDebug
+
+      - name: Prepare APK download folder
+        run: |
+          mkdir -p download
+          cp app/build/outputs/apk/debug/*.apk download/AMALAN-BAIAT-v1.0-debug.apk
+
+      - name: Commit APK to repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add download/AMALAN-BAIAT-v1.0-debug.apk
+          if git diff --cached --quiet; then
+            echo "APK tidak berubah, tidak ada commit baru."
+          else
+            git commit -m "Update downloadable APK"
+            git push
+          fi
+
+      - name: Upload APK artifact as backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: AMALAN-BAIAT-v1.0-debug
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
