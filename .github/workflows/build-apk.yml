@@ -1,24 +1,19 @@
-name: Build Amalan Baiat
+name: Build AMALAN BAIAT APK
 
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
-      - name: Checkout
+      - name: Checkout source
         uses: actions/checkout@v4
-
-      - name: Extract app
-        run: |
-          unzip -q app.zip -d extracted
-          cp -r extracted/app .
-          echo "=== PROJECT STRUCTURE ==="
-          find app -maxdepth 4 -type f | sort | head -100
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -29,16 +24,20 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Install Android SDK 35
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.7'
 
-      - name: Build APK
+      - name: Build debug APK
         run: gradle --no-daemon assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: AMALAN-BAIAT-baseline
+          name: AMALAN-BAIAT-v1.0-debug
           path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
