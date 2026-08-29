@@ -33,7 +33,7 @@ public class MainActivity extends Activity {
     @Override public void onCreate(Bundle b) {
         super.onCreate(b); requestWindowFeature(Window.FEATURE_NO_TITLE);
         d = getResources().getDisplayMetrics().density;
-        getWindow().setStatusBarColor(BG); 
+        getWindow().setStatusBarColor(BG);
         getWindow().setNavigationBarColor(Color.rgb(233,222,200));
         getWindow().setNavigationBarDividerColor(Color.rgb(233,222,200));
         getWindow().getDecorView().setSystemUiVisibility(
@@ -60,8 +60,10 @@ public class MainActivity extends Activity {
 
     ImageView fullImage(int res){ ImageView iv=new ImageView(this); iv.setImageResource(res); iv.setScaleType(ImageView.ScaleType.FIT_CENTER); return iv; }
 
-    void showGuru(){ page=0; hideSystemNavigation(); clear(); root.setBackgroundColor(Color.BLACK); ImageView iv=fullImage(R.drawable.guru_mursyid); root.addView(iv,new FrameLayout.LayoutParams(-1,-1)); addBottomButton("LANJUT",false,()->showSanad()); fade(iv); }
-    void showSanad(){ page=-2; hideSystemNavigation(); clear(); root.setBackgroundColor(Color.BLACK); ImageView iv=fullImage(R.drawable.sanad_thoriqoh); root.addView(iv,new FrameLayout.LayoutParams(-1,-1)); addBottomButton("LANJUTKAN",false,()->showPage(1)); fade(iv); }
+    // Hanya posisi tombol halaman foto KH. Ahmad Wafi yang diperbaiki.
+    // Foto, logo, dan isi halaman tidak diubah.
+    void showGuru(){ page=0; hideSystemNavigation(); clear(); root.setBackgroundColor(Color.BLACK); ImageView iv=fullImage(R.drawable.guru_mursyid); root.addView(iv,new FrameLayout.LayoutParams(-1,-1)); addGuruButton("LANJUT",()->showSanad()); fade(iv); }
+    void showSanad(){ page=-2; hideSystemNavigation(); clear(); root.setBackgroundColor(Color.BLACK); ImageView iv=fullImage(R.drawable.sanad_thoriqoh); root.addView(iv,new FrameLayout.LayoutParams(-1,-1)); addBottomButton("LANJUTKAN",false,()->showPage(1)); }
 
     TextView tv(String s,float sp,boolean bold){ TextView t=new TextView(this); t.setText(s); t.setTextColor(TEXT); t.setTextSize(sp); t.setGravity(Gravity.CENTER); t.setTypeface(Typeface.DEFAULT,bold?Typeface.BOLD:Typeface.NORMAL); t.setPadding(20,8,20,8); return t; }
     Button btn(String s){ Button b=new Button(this); b.setText(s); b.setTextSize(14); b.setTextColor(Color.WHITE); b.setAllCaps(false); b.setBackgroundColor(BUTTON); return b; }
@@ -83,7 +85,7 @@ public class MainActivity extends Activity {
         else if(p==11) dzikir(box,"إِلَى حَضْرَةِ الْإِمَامِ أَبِي الْحَسَنِ عَلِيِّ الشَّاذِلِيِّ وَإِلَى شَيْخِي وَمُرَبِّي الشَّيْخِ أَحْمَدْ وَافِي مَيْمُونْ : الْفَاتِحَة\n\nilla hadrotil imam abil hasan 'ali asy syadzili wa illa syaikhi wa murobbii, syaikh ahmad wafi maimoen\n\nkemudian membaca alfatihah 10 kali","","",10);
         else if(p==12) dzikir(box,"membaca surat al ikhlas 30 kali","بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ قُلْ هُوَ اللّٰهُ اَحَدٌۚاَللّٰهُ\nالصَّمَدُۚلَمْ يَلِدْ وَلَمْ يُوْلَدْۙوَلَمْ يَكُنْ لَّهُ كُفُوًا اَحَدٌۙ","Bismillahirrahmanirrahim.Qul huwallahu ahad.Allahu sh-shamad.Lam yalid wa lam yulad.Wa lam yakul lahu kufuwan ahad.",30);
         else if(p==13) dzikir(box,"membaca surat al falaq10 kali","بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ قُلْ اَعُوْذُ بِرَبِّ الْفَلَقِۙ.مِنْ شَرِّ مَا خَلَقَۙ.وَمِنْ شَرِّ غَاسِقٍ اِذَا وَقَبَۙ.وَمِنْ شَرِّ النَّفّٰثٰتِ فِى الْعُقَدِۙ.وَمِنْ شَرِّ حَاسِدٍ اِذَا حَسَدَ","Bismillahirrahmanirrahim.Qul a'udzu birabbil falaq.Min syarri ma khalaq.Wa min syarri ghasiqin idza waqab.Wa min syarrin-naffatsati fil 'uqad.Wa min syarri hasidin idza hasad",10);
-        else if(p==14) dzikir(box,"membaca surat annas 10 kali","بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ.قُلْ أَعُوذُ بِرَبِّ النَّاسِ .مَلِكِ النَّاسِ.إِلَٰهِ النَّاسِ.مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ.الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ مِنَ مِنَ الْجِنَّةِ وَالنَّاسِ","Bismillahirrahmaanirrahiim. Qul a'udzu birabbin-nas. Malikin-nas. Ilahin-nas. Min syarril-waswasil-khannas. Alladzii yuwaswisu fii shuduurin-nas. Minal-jinnati wan-nas.",10);
+        else if(p==14) dzikir(box,"membaca surat annas 10 kali","بِسْمِ اللَّهِ الرَّحْمٰنِ الرَّحِيمِ.قُلْ أَعُوذُ بِرَبِّ النَّاسِ .مَلِكِ النَّاسِ.إِلَٰهِ النَّاسِ.مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ.الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ مِنَ مِنَ الْجِنَّةِ وَالنَّاسِ","Bismillahirrahmaanirrahiim. Qul a'udzu birabbin-nas. Malikin-nas. Ilahin-nas. Min syarril-waswasil-khannas. Alladzii yuwaswisu fii shuduurin-nas. Minal-jinnati wan-nas.",10);
         else if(p==15) dzikir(box,"Kemudian Berdo’a :\n\n(223x) يَا حَيُّ يَا قَيُّومُ\n\nyaa Hayyu yaa qoyyum 223x","","",223);
         else if(p==16) dzikir(box,"أَخِي قَلْبِي بِنُورِكَ أَقِمْنِي لِشُهُودِكَ وَعَرِّفْنِي الطَّرِيقَ إِلَيْكَ 3x\n\nAhyiinqolbii binuurika, wa aqimnii lisyuhuudika, wa 'arifnii thoriqo ilaika 3x","","",3);
         else if(p==17) box.addView(tv("Setelah Semuanya Selesai, Apabila Akan Tidur (Posisi Kepala di Utara Wajah Menghadap Kiblat). Mohon Kepada Allah SWT Semoga Diberi Impian / Mimpi Yang Bagus.",19,false));
@@ -220,6 +222,18 @@ public class MainActivity extends Activity {
         FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(
                 dp(190),dp(58),Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL);
         lp.bottomMargin=dp(18);
+        root.addView(b,lp);
+    }
+
+    // Tombol khusus halaman foto KH. Ahmad Wafi.
+    // Diletakkan paling bawah karena navigasi Android sudah disembunyikan.
+    void addGuruButton(String text, Runnable action){
+        Button b=btn(text);
+        b.setTextSize(15);
+        b.setOnClickListener(v->action.run());
+        FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(
+                dp(190),dp(58),Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL);
+        lp.bottomMargin=dp(0);
         root.addView(b,lp);
     }
 
