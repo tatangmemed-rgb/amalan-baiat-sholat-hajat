@@ -1,0 +1,9 @@
+<resources>
+    <style name="Theme.AmalanBaiat" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">@color/bg_top</item>
+        <item name="android:navigationBarColor">@color/bg_bottom</item>
+        <item name="android:colorAccent">@color/button</item>
+    </style>
+</resources>
