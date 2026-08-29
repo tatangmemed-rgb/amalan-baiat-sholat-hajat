@@ -7,39 +7,30 @@ import android.graphics.Typeface;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowInsets;
-import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
 import android.net.Uri;
-import android.media.MediaPlayer;
-import android.content.Intent;
 
 public class MainActivity extends Activity {
     float d;
     FrameLayout root;
-    int page = -1; // -1 intro, 0 guru, -2 sanad, 1..18 content
+    int page = -1;
     VideoView video;
     int count = 0;
-
     final int BG = Color.rgb(247,241,228), TEXT = Color.rgb(45,40,31), BUTTON = Color.rgb(78,107,77);
 
     @Override public void onCreate(Bundle b) {
         super.onCreate(b); requestWindowFeature(Window.FEATURE_NO_TITLE);
         d = getResources().getDisplayMetrics().density;
-        getWindow().setStatusBarColor(BG); 
-        getWindow().setNavigationBarColor(Color.rgb(233,222,200));
-        getWindow().setNavigationBarDividerColor(Color.rgb(233,222,200));
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-        );
-        root = new FrameLayout(this); root.setBackgroundResource(com.mds.amalanbaiat.R.drawable.bg); setContentView(root);
+        root = new FrameLayout(this);
+        root.setBackgroundResource(com.mds.amalanbaiat.R.drawable.bg);
+        setContentView(root);
+        hideSystemNavigation();
         showIntro();
     }
 
@@ -47,21 +38,36 @@ public class MainActivity extends Activity {
     void fade(View v){ AlphaAnimation a=new AlphaAnimation(0f,1f); a.setDuration(280); v.startAnimation(a); }
 
     void showIntro(){
-        clear();
-        hideSystemNavigation(); video=new VideoView(this); root.addView(video,new FrameLayout.LayoutParams(-1,-1));
-        video.setVideoURI(Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.logo_intro)); video.setOnPreparedListener(mp->{ mp.setLooping(false); mp.start(); });
+        clear(); hideSystemNavigation();
+        video=new VideoView(this);
+        root.addView(video,new FrameLayout.LayoutParams(-1,-1));
+        video.setVideoURI(Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.logo_intro));
+        video.setOnPreparedListener(mp->{ mp.setLooping(false); mp.start(); });
         video.setOnCompletionListener(mp -> showGuru());
     }
 
     ImageView fullImage(int res){ ImageView iv=new ImageView(this); iv.setImageResource(res); iv.setScaleType(ImageView.ScaleType.FIT_CENTER); return iv; }
 
-    void showGuru(){ page=0; hideSystemNavigation(); clear(); root.setBackgroundColor(Color.BLACK); ImageView iv=fullImage(R.drawable.guru_mursyid); root.addView(iv,new FrameLayout.LayoutParams(-1,-1)); addBottomButton("LANJUT",false,()->showSanad()); fade(iv); }
-    void showSanad(){ page=-2; hideSystemNavigation(); clear(); root.setBackgroundColor(Color.BLACK); ImageView iv=fullImage(R.drawable.sanad_thoriqoh); root.addView(iv,new FrameLayout.LayoutParams(-1,-1)); addBottomButton("LANJUTKAN",false,()->showPage(1)); fade(iv); }
+    void showGuru(){
+        page=0; hideSystemNavigation(); clear(); root.setBackgroundColor(Color.BLACK);
+        ImageView iv=fullImage(R.drawable.guru_mursyid); root.addView(iv,new FrameLayout.LayoutParams(-1,-1));
+        addBottomButton("LANJUT",()->showSanad()); fade(iv);
+    }
 
-    TextView tv(String s,float sp,boolean bold){ TextView t=new TextView(this); t.setText(s); t.setTextColor(TEXT); t.setTextSize(sp); t.setGravity(Gravity.CENTER); t.setTypeface(Typeface.DEFAULT,bold?Typeface.BOLD:Typeface.NORMAL); t.setPadding(20,8,20,8); return t; }
+    void showSanad(){
+        page=-2; hideSystemNavigation(); clear(); root.setBackgroundColor(Color.BLACK);
+        ImageView iv=fullImage(R.drawable.sanad_thoriqoh); root.addView(iv,new FrameLayout.LayoutParams(-1,-1));
+        addBottomButton("LANJUTKAN",()->showPage(1)); fade(iv);
+    }
+
+    TextView tv(String s,float sp,boolean bold){
+        TextView t=new TextView(this); t.setText(s); t.setTextColor(TEXT); t.setTextSize(sp); t.setGravity(Gravity.CENTER);
+        t.setTypeface(Typeface.DEFAULT,bold?Typeface.BOLD:Typeface.NORMAL); t.setPadding(20,8,20,8); return t;
+    }
     Button btn(String s){ Button b=new Button(this); b.setText(s); b.setTextSize(14); b.setTextColor(Color.WHITE); b.setAllCaps(false); b.setBackgroundColor(BUTTON); return b; }
 
-    void showPage(int p){ page=p; count=0; clear(); hideSystemNavigation(); root.setBackgroundResource(R.drawable.bg);
+    void showPage(int p){
+        page=p; count=0; clear(); hideSystemNavigation(); root.setBackgroundResource(R.drawable.bg);
         LinearLayout box=new LinearLayout(this); box.setOrientation(LinearLayout.VERTICAL); box.setGravity(Gravity.CENTER_HORIZONTAL); box.setPadding(18,10,18,8);
         ScrollFrame sf=new ScrollFrame(this); sf.addView(box); root.addView(sf,new FrameLayout.LayoutParams(-1,-1));
         ImageView logo=new ImageView(this); logo.setImageResource(R.drawable.logo_mds); logo.setScaleType(ImageView.ScaleType.FIT_CENTER); box.addView(logo,new LinearLayout.LayoutParams(-1,92));
@@ -83,143 +89,58 @@ public class MainActivity extends Activity {
         else if(p==16) dzikir(box,"أَخِي قَلْبِي بِنُورِكَ أَقِمْنِي لِشُهُودِكَ وَعَرِّفْنِي الطَّرِيقَ إِلَيْكَ 3x\n\nAhyiinqolbii binuurika, wa aqimnii lisyuhuudika, wa 'arifnii thoriqo ilaika 3x","","",3);
         else if(p==17) box.addView(tv("Setelah Semuanya Selesai, Apabila Akan Tidur (Posisi Kepala di Utara Wajah Menghadap Kiblat). Mohon Kepada Allah SWT Semoga Diberi Impian / Mimpi Yang Bagus.",19,false));
         else if(p==18){ box.addView(tv("ALHAMDULILLAH",26,true)); box.addView(tv("Amalan sudah selesai.\n\nsemoga diberi tetapnya iman, hati yang terang, dan selamat dunia akherat. aamiin.",19,false)); }
-        addNav(p);
-        fade(sf);
+        addNav(p); fade(sf);
     }
 
     void sholatHajatCounter(LinearLayout box){
-        // Teks asli halaman Sholat Hajat dipertahankan.
         box.addView(tv("Menjalankan Sholat Hajat 4 Roka’at ( dua kali salam ) Bacaanya :\nRoka’at 1, Fatihah kemudian Surat Ikhlas 10 Kali\nRoka’at 2, Fatihah kemudian Surat Ikhlas 20 Kali\nRoka’at 3, Fatihah kemudian Surat Ikhlas 30 Kali\nRoka’at 4, Fatihah kemudian Surat Ikhlas 40 Kali.",18,false));
-
-        TextView rakaatInfo=tv("Raka’at saat ini: Raka’at 1",19,true);
-        box.addView(rakaatInfo);
-
+        TextView rakaatInfo=tv("Raka’at saat ini: Raka’at 1",19,true); box.addView(rakaatInfo);
         TextView counter=tv("0 / 10",28,true);
-        LinearLayout.LayoutParams cp=new LinearLayout.LayoutParams(-1,64);
-        cp.setMargins(0,dp(8),0,dp(12));
-        box.addView(counter,cp);
-
-        Button hitung=btn("HITUNG");
-        hitung.setTextSize(16);
-        LinearLayout.LayoutParams hp=new LinearLayout.LayoutParams(-1,72);
-        hp.setMargins(dp(20),dp(8),dp(20),dp(18));
-        box.addView(hitung,hp);
-
-        final int[] rakaat={1};
-        final int[] target={10};
-        final int[] hitungan={0};
-
-        hitung.setOnClickListener(v -> {
-            if(rakaat[0] > 4) return;
-
-            hitungan[0]++;
-
-            if(hitungan[0] >= target[0]){
-                if(rakaat[0] == 4){
-                    hitungan[0]=target[0];
-                    counter.setText(target[0] + " / " + target[0]);
-                    rakaatInfo.setText("Raka’at saat ini: SELESAI");
-                    hitung.setText("SELESAI");
-                    hitung.setEnabled(false);
-                    hitung.setAlpha(0.7f);
-                } else {
-                    hitungan[0]=0;
-                    rakaat[0]++;
-                    target[0]=rakaat[0] * 10;
-                    rakaatInfo.setText("Raka’at saat ini: Raka’at " + rakaat[0]);
-                    counter.setText("0 / " + target[0]);
-                }
-            } else {
-                counter.setText(hitungan[0] + " / " + target[0]);
-            }
+        LinearLayout.LayoutParams cp=new LinearLayout.LayoutParams(-1,64); cp.setMargins(0,dp(10),0,dp(18)); box.addView(counter,cp);
+        Button hitung=btn("HITUNG"); hitung.setTextSize(16);
+        LinearLayout.LayoutParams hp=new LinearLayout.LayoutParams(-1,72); hp.setMargins(dp(20),dp(14),dp(20),dp(36)); box.addView(hitung,hp);
+        final int[] rakaat={1}, target={10}, hitungan={0};
+        hitung.setOnClickListener(v->{
+            if(rakaat[0]>4)return; hitungan[0]++;
+            if(hitungan[0]>=target[0]){
+                if(rakaat[0]==4){ hitungan[0]=target[0]; counter.setText(target[0]+" / "+target[0]); rakaatInfo.setText("Raka’at saat ini: SELESAI"); hitung.setText("SELESAI"); hitung.setEnabled(false); hitung.setAlpha(0.7f); }
+                else { hitungan[0]=0; rakaat[0]++; target[0]=rakaat[0]*10; rakaatInfo.setText("Raka’at saat ini: Raka’at "+rakaat[0]); counter.setText("0 / "+target[0]); }
+            } else counter.setText(hitungan[0]+" / "+target[0]);
         });
     }
 
     void dzikir(LinearLayout box,String title,String arab,String latin,int target){
         box.addView(tv(title,19,true));
-        if(!arab.isEmpty()) { TextView a=tv(arab,24,false); a.setTypeface(Typeface.create("sans",Typeface.NORMAL)); box.addView(a); }
+        if(!arab.isEmpty()) box.addView(tv(arab,24,false));
         if(!latin.isEmpty()) box.addView(tv(latin,17,false));
         TextView hint=tv("MULAI MEMBACA",15,true); box.addView(hint);
-        TextView counter=tv("0 / "+target,28,true);
-        LinearLayout.LayoutParams cp=new LinearLayout.LayoutParams(-1,64);
-        cp.setMargins(0,dp(10),0,dp(18));
-        box.addView(counter,cp);
-        Button tap=btn("Ketuk disini");
-        tap.setTextSize(16);
-        LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(-1,72);
-        tp.setMargins(dp(20),dp(8),dp(20),dp(18));
-        box.addView(tap,tp);
+        TextView counter=tv("0 / "+target,28,true); LinearLayout.LayoutParams cp=new LinearLayout.LayoutParams(-1,64); cp.setMargins(0,dp(10),0,dp(18)); box.addView(counter,cp);
+        Button tap=btn("Ketuk disini"); tap.setTextSize(16); LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(-1,72); tp.setMargins(dp(20),dp(8),dp(20),dp(36)); box.addView(tap,tp);
         tap.setOnClickListener(v->{ if(count<target){ count++; counter.setText(count+" / "+target); if(count>=target){ hint.setText("SELESAI — LANJUTKAN"); tap.setEnabled(false); }} });
     }
 
     void addNav(int p){
-        LinearLayout nav=new LinearLayout(this);
-        nav.setOrientation(LinearLayout.HORIZONTAL);
-        nav.setGravity(Gravity.CENTER_VERTICAL);
-        nav.setPadding(dp(10),dp(6),dp(10),dp(6));
-        nav.setBackgroundColor(BUTTON);
-
-        Button back=btn("KEMBALI");
-        Button next=btn(p==18?"SELESAI":"LANJUTKAN");
-        back.setTextSize(15); next.setTextSize(15);
-        back.setMinHeight(dp(52)); next.setMinHeight(dp(52));
-
-        LinearLayout.LayoutParams blp=new LinearLayout.LayoutParams(0,dp(54),1);
-        nav.addView(back,blp);
-        LinearLayout.LayoutParams nlp=new LinearLayout.LayoutParams(0,dp(54),1);
-        nlp.setMargins(dp(12),0,0,0);
-        nav.addView(next,nlp);
-
-        if(p==1) {
-            back.setEnabled(false);
-            back.setAlpha(0.55f);
-        } else {
-            back.setOnClickListener(v->{
-                if(p==2) showPage(1);
-                else if(p>=3) showPage(p-1);
-            });
-        }
-
-        if(p==18) next.setOnClickListener(v->finishAffinity());
-        else next.setOnClickListener(v->showPage(p+1));
-
-        // Place navigation well above the Android system navigation area.
-        FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(
-                -1, dp(70), Gravity.BOTTOM);
-        lp.setMargins(dp(8),0,dp(8),dp(52));
-        root.addView(nav,lp);
-
-        View child=root.getChildAt(0);
-        if(child instanceof ScrollFrame){
-            ScrollFrame sf=(ScrollFrame)child;
-            sf.setPadding(sf.getPaddingLeft(), sf.getPaddingTop(),
-                    sf.getPaddingRight(), dp(128));
-            sf.setClipToPadding(false);
-        }
+        LinearLayout nav=new LinearLayout(this); nav.setOrientation(LinearLayout.HORIZONTAL); nav.setGravity(Gravity.CENTER_VERTICAL); nav.setPadding(dp(10),dp(6),dp(10),dp(6)); nav.setBackgroundColor(BUTTON);
+        Button back=btn("KEMBALI"), next=btn(p==18?"SELESAI":"LANJUTKAN"); back.setTextSize(15); next.setTextSize(15); back.setMinHeight(dp(52)); next.setMinHeight(dp(52));
+        LinearLayout.LayoutParams blp=new LinearLayout.LayoutParams(0,dp(54),1); nav.addView(back,blp); LinearLayout.LayoutParams nlp=new LinearLayout.LayoutParams(0,dp(54),1); nlp.setMargins(dp(12),0,0,0); nav.addView(next,nlp);
+        if(p==1){ back.setEnabled(false); back.setAlpha(0.55f); } else back.setOnClickListener(v->{ if(p==2) showPage(1); else if(p>=3) showPage(p-1); });
+        if(p==18) next.setOnClickListener(v->finishAffinity()); else next.setOnClickListener(v->showPage(p+1));
+        FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(-1,dp(70),Gravity.BOTTOM); lp.setMargins(dp(8),0,dp(8),dp(10)); root.addView(nav,lp);
+        View child=root.getChildAt(0); if(child instanceof ScrollFrame){ ScrollFrame sf=(ScrollFrame)child; sf.setPadding(sf.getPaddingLeft(),sf.getPaddingTop(),sf.getPaddingRight(),dp(110)); sf.setClipToPadding(false); }
     }
 
-    void addBottomButton(String text, boolean left, Runnable action){
-        Button b=btn(text);
-        b.setTextSize(15);
-        b.setOnClickListener(v->action.run());
-        FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(
-                dp(190),dp(58),Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL);
-        lp.bottomMargin=dp(58);
-        root.addView(b,lp);
+    void addBottomButton(String text,Runnable action){
+        Button b=btn(text); b.setTextSize(15); b.setOnClickListener(v->action.run());
+        FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(dp(190),dp(58),Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL); lp.bottomMargin=dp(24); root.addView(b,lp);
     }
 
     void hideSystemNavigation(){
         getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
+            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         );
     }
 
-    int dp(int value){
-        return (int)(value * getResources().getDisplayMetrics().density + 0.5f);
-    }
-
+    int dp(int value){ return (int)(value*getResources().getDisplayMetrics().density+0.5f); }
     static class ScrollFrame extends android.widget.ScrollView { ScrollFrame(android.content.Context c){ super(c); setFillViewport(true); setClipToPadding(false); } }
 }
