@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
 
     steps:
       - name: Checkout source
@@ -35,7 +35,11 @@ jobs:
       - name: Build debug APK
         run: gradle --no-daemon assembleDebug
 
-      - name: Upload APK
+      - name: Prepare download folder
+        run: | mkdir -p download cp app/build/outputs/apk/debug/*.apk download/AMALAN-BAIAT-v1.0-debug.apk 
+      - name: Commit APK to download folder
+        run: | git config user.name "github-actions[bot]" git config user.email "41898282+github-actions[bot]@users.noreply.github.com" git add download/AMALAN-BAIAT-v1.0-debug.apk git diff --cached --quiet || git commit -m "Update downloadable APK" git push 
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: AMALAN-BAIAT-v1.0-debug
